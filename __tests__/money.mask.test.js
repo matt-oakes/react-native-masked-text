@@ -135,6 +135,44 @@ test('US$ config with value 1234567 results US$12,345.67', () => {
     expect(received).toBe(expected)
 })
 
+test('US$ config with value 1234567 and no deliminater results US$12345.67', () => {
+    var mask = new MoneyMask()
+    var expected = 'US$12345.67'
+    var received = mask.getValue('1234567', {
+        unit: 'US$',
+        delimiter: '',
+        separator: '.'
+    })
+
+    expect(received).toBe(expected)
+})
+
+test('A zero precision suffix unit value 1234567 should have no trailing serpator and result in 1234567 units', () => {
+    var mask = new MoneyMask()
+    var expected = '1234567 units'
+    var received = mask.getValue('1234567', {
+        unit: '',
+        suffixUnit: ' units',
+        delimiter: '',
+        precision: 0
+    })
+
+    expect(received).toBe(expected)
+})
+
+test('A zero precision prefix value value 1234567 should have no trailing serpator and result in Stuff 1234567', () => {
+    var mask = new MoneyMask()
+    var expected = 'Stuff 1234567'
+    var received = mask.getValue('1234567', {
+        unit: 'Stuff ',
+        suffixUnit: '',
+        delimiter: '',
+        precision: 0
+    })
+
+    expect(received).toBe(expected)
+})
+
 test('1 results R$0,01 and raw value 0.01', () => {
     var mask = new MoneyMask()
     var expected = 'R$0,01'

@@ -23,8 +23,8 @@ mergeMoneyOptions=function mergeMoneyOptions(opts){
 opts=opts||{};
 opts={
 precision:opts.hasOwnProperty("precision")?opts.precision:2,
-separator:opts.separator||",",
-delimiter:opts.delimiter||".",
+separator:opts.hasOwnProperty("separator")?opts.separator:",",
+delimiter:opts.hasOwnProperty("delimiter")?opts.delimiter:".",
 unit:opts.unit?opts.unit+' ':"",
 
 suffixUnit:opts.suffixUnit&&" "+opts.suffixUnit.replace(/[\s]/g,'')||"",
@@ -134,9 +134,9 @@ if(digitsLength<lastDigitLength){
 value=value.slice(0,value.length-1);
 }
 }
+var clearDelimiter=opts.delimiter&&new RegExp("^(0|\\"+opts.delimiter+")");
+var clearSeparator=opts.separator&&new RegExp("(\\"+opts.separator+")("+opts.suffixUnit+")?$");
 var number=value.toString().replace(/[\D]/g,""),
-clearDelimiter=new RegExp("^(0|\\"+opts.delimiter+")"),
-clearSeparator=new RegExp("(\\"+opts.separator+")$"),
 money=number.substr(0,number.length-opts.moneyPrecision),
 masked=money.substr(0,money.length%3),
 cents=new Array(opts.precision+1).join("0");
@@ -148,7 +148,7 @@ masked+=opts.delimiter;
 }
 masked+=money[i];
 }
-masked=masked.replace(clearDelimiter,"");
+if(clearDelimiter)masked=masked.replace(clearDelimiter,"");
 masked=masked.length?masked:"0";
 if(!opts.zeroCents){
 var beginCents=number.length-opts.precision,
@@ -164,7 +164,7 @@ opts.unit.substring(0,opts.unit.length-1):
 
 opts.unit;
 var output=unitToApply+masked+opts.separator+cents+opts.suffixUnit;
-return output.replace(clearSeparator,"");
+return clearSeparator?output.replace(clearSeparator,"$2"):output;
 };
 
 VMasker.toPattern=function(value,opts){
